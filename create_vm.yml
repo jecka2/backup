@@ -1,0 +1,76 @@
+---
+- name: Create vms on Proxmox
+  hosts: Proxmox
+  vars_files:
+    - secrets.yml
+    - vars/hosts.yml 
+   
+  tasks:
+    - name: Install python
+      ansible.builtin.apt:
+        name: python3-pip
+        state: present
+
+    - name: INstall pip modules
+      ansible.builtin.apt:
+       name:  python3-setuptools
+       state: present
+
+    - name: Install pip modules 
+      ansible.builtin.apt:
+        name: python3-requests
+        state: present
+
+    - name: Install pip modules
+      ansible.builtin.apt:
+        name: python3-proxmoxer
+        state: present
+
+    - name: clone KVM VM 1 from template
+      community.general.proxmox_kvm:
+        node: "pve"  # Узел кластера (можно указать all)
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ proxmox_user }}"
+        api_token_id: "{{ proxmox_token }}"
+        api_token_secret: "{{ proxmox_token_secret }}"
+        validate_certs: false
+        clone: "Ubuntu-img"
+        name: "{{ item.name }}"
+        storage: "homelab"
+        timeout: 300
+      loop: "{{ vms_to_create }}"
+
+
+    - name: Update VM configs
+      community.general.proxmox_kvm:
+        node: "pve"  # Узел кластера (можно указать all)
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ proxmox_user }}"
+        api_token_id: "{{ proxmox_token }}"
+        api_token_secret: "{{ proxmox_token_secret }}"
+        validate_certs: false
+        name: "{{ item.name }}"
+        memory: "{{ item.memory }}"
+        searchdomains: 'home.lan'
+        nameservers: "{{dns}}"
+        net:
+         net0: 'virtio,bridge=vmbr1'
+        ipconfig:
+          ipconfig0: 'ip={{item.ip_address}},gw={{gateway}}'
+        timeout: 300
+        update: true
+      loop: "{{ vms_to_create }}"
+
+
+    - name: Start VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_host }}"
+        api_user: "{{ proxmox_user }}"
+        api_token_id: "{{ proxmox_token }}"
+        api_token_secret: "{{ proxmox_token_secret }}"
+        name: "{{ item.name }}"
+        node: "pve"
+        state: started   
+      loop: "{{ vms_to_create }}"   
+      
+...

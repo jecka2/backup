@@ -1,0 +1,76 @@
+- name: Install  & config web server
+  hosts: serv
+  vars_files:
+   - secrets.yml
+  become: true
+  tasks:
+
+    - name: Update apt package cache
+      ansible.builtin.apt:
+       update_cache: true
+
+    - name: Install packages
+      ansible.builtin.apt:
+       name:
+        - borgbackup
+       state: present
+
+    - name: 'Create borg group on server'
+      ansible.builtin.group:
+       name: 'borg'
+       system: 'true' 
+
+    - name: 'Create borg user on server'
+      ansible.builtin.user:
+       name: 'borg'
+       group: 'borg'
+       shell: '/bin/sh'
+       home: '/srv/borg'
+       createhome: 'true'
+       system: 'yes'
+       password: "{{ upassword | password_hash('sha512') }}"
+
+    - name: Create dir
+      ansible.builtin.file:
+       path: /var/backup
+       state: directory
+       owner: borg
+       group: borg
+       mode: "0770"
+
+    - name: Create directory
+      ansible.builtin.file:
+       path: /srv/borg/.ssh
+       state: directory
+       mode: "0700"
+
+    - name: Create directory
+      ansible.builtin.file:
+       path: /srv/borg/.ssh/authorized_keys
+       owner: borg
+       group: borg
+       state: touch
+       mode: "0600"
+
+  #  - name: 'Ensure borg directories exist on server'
+  #    ansible.builltin.file:
+  #    state: 'directory'
+  #    path: '{{ item }}'
+  #     owner: 'borg'
+  #     mode: '0700'
+  #    loop:
+  #      - '/srv/borg/.ssh'
+  #      - '/srv/borg/{{ server.name }}'
+
+   # - name: 'Authorize client public key'
+   #   ansible.builtin.lineinfile:
+   #    path: '/srv/borg/.ssh/authorized_keys'
+   #    line: '{{ line }}{{ server.pubkey }}'
+   #    search_string: '{{ line }}'
+   #    create: true
+   #    owner: 'borg'
+   #    group: 'borg'
+   #    mode: '0400'
+   #   vars:
+   #    line: 'command="borg serve --restrict-to-path /srv/borg/{{ server.name }}",restrict '
+
