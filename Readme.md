@@ -58,7 +58,7 @@ ansible-playbook config_client.yml --ask-vault-pass
 
 #### 4. Результаты  
 
-4.1 - ![Получение данных о созданых резервных копиях](https://raw.githubusercontent.com/jecka2/backup/refs/heads/main/screenshots/borg_backup.png)
+4.1 - ![Получение данных о созданых резервных копиях](https://raw.githubusercontent.com/jecka2/backup/refs/heads/main/screenshots/borg_backups.png)
 
 4.2 - Проверим какие файлы находятся из определнного бэкап сета
 
