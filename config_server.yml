@@ -1,4 +1,4 @@
-- name: Install  & config web server
+- name: Install  & config server
   hosts: serv
   vars_files:
    - secrets.yml
@@ -51,26 +51,3 @@
        group: borg
        state: touch
        mode: "0600"
-
-  #  - name: 'Ensure borg directories exist on server'
-  #    ansible.builltin.file:
-  #    state: 'directory'
-  #    path: '{{ item }}'
-  #     owner: 'borg'
-  #     mode: '0700'
-  #    loop:
-  #      - '/srv/borg/.ssh'
-  #      - '/srv/borg/{{ server.name }}'
-
-   # - name: 'Authorize client public key'
-   #   ansible.builtin.lineinfile:
-   #    path: '/srv/borg/.ssh/authorized_keys'
-   #    line: '{{ line }}{{ server.pubkey }}'
-   #    search_string: '{{ line }}'
-   #    create: true
-   #    owner: 'borg'
-   #    group: 'borg'
-   #    mode: '0400'
-   #   vars:
-   #    line: 'command="borg serve --restrict-to-path /srv/borg/{{ server.name }}",restrict '
-
