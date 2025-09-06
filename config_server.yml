@@ -24,7 +24,7 @@
       ansible.builtin.user:
        name: 'borg'
        group: 'borg'
-       shell: '/bin/sh'
+       shell: '/bin/bash'
        home: '/srv/borg'
        createhome: 'true'
        system: 'yes'

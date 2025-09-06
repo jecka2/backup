@@ -2,12 +2,13 @@
 Description=Borg Backup
 
 [Service]
-Type=simple
+Type=oneshot
 User=borg
 # Репозиторий
 Environment=REPO=borg@192.168.1.105:/var/backup/
 # Что бэкапим
 Environment=BACKUP_TARGET=/etc
+Environment=BORG_RSH='ssh -i /srv/borg/.ssh/borg'
 
 # Создание бэкапа
 ExecStart=/bin/borg create \
