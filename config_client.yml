@@ -93,7 +93,7 @@
       BORG_RSH: "ssh -i /srv/borg/.ssh/borg -o StrictHostKeyChecking=no"
      ansible.builtin.command: >
       borg init
-      --encryption=none
+      --encryption=repokey-blake2
       borg@192.168.1.105:/var/backup/
 
   
